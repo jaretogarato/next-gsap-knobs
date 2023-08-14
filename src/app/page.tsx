@@ -7,13 +7,11 @@ import { gsap } from 'gsap/dist/gsap'
 import timeline from 'gsap/dist/gsap'
 
 export default function Home() {
-	let app = useRef<HTMLDivElement | null>(null) // Define the type here
+	// let app = useRef<HTMLDivElement | null>(null) // Define the type here
+	const app = useRef<HTMLDivElement | null>(null)
 
 	useEffect(() => {
-		// TweenMax.to(app, 2, { css: { opacity: 1 } })
-		// new
-		//gsap.to(".class", {duration: 2, x: 100});
-		gsap.to(app, { duration: 2, x: 100 })
+		gsap.to(app.current, { duration: 2, opacity: 1 })
 		console.log(app)
 	}, [])
 
@@ -45,8 +43,9 @@ export default function Home() {
 			</div>
 
 			<div
-				// ref={(el) => (app = el)}
-				ref={(el) => (app.current = el)}
+				ref={(el) => {
+					app.current = el
+				}}
 				className='hero'
 			>
 				<Image
