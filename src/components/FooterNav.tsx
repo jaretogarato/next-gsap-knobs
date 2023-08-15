@@ -11,7 +11,7 @@ export default function Hero() {
 						-&gt;
 					</span>
 				</h2>
-				<p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
+				<p className={`m-0 max-w-[30ch] text-sm opacity-50 text-left`}>
 					Under development. May need to buy the GSAP plugin.
 				</p>
 			</a>
@@ -26,7 +26,7 @@ export default function Hero() {
 						-&gt;
 					</span>
 				</h2>
-				<p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
+				<p className={`m-0 max-w-[30ch] text-sm opacity-50 text-left`}>
 					Based on JoshJG's React Canvas Knob
 				</p>
 			</a>
@@ -41,7 +41,7 @@ export default function Hero() {
 						-&gt;
 					</span>
 				</h2>
-				<p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
+				<p className={`m-0 max-w-[30ch] text-sm opacity-50 text-left`}>
 					Original by Chris Gannon: https://codepen.io/chrisgannon/pen/qPKXmq
 				</p>
 			</a>
@@ -56,7 +56,7 @@ export default function Hero() {
 						-&gt;
 					</span>
 				</h2>
-				<p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
+				<p className={`m-0 max-w-[30ch] text-sm opacity-50 text-left`}>
 					Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
 				</p>
 			</a>
