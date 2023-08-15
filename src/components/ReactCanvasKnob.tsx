@@ -2,6 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 
+import '../styles/globals.scss'
+import '../styles/knobs.css'
+import '../styles/ui.css'
+
+import Image from 'next/image'
+
+import knobBg from '/assets/images/megaknob07.png'
+
 interface KnobProps {
 	value: number
 	onChange: (value: number) => void
@@ -141,10 +149,8 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 	displayCustom,
 }) => {
 	const [touchIndex, setTouchIndex] = useState<number>(0)
-
 	const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
-	// from old constructor:
 	const [w, setW] = useState(width || 200)
 	const [h, setH] = useState(height || w)
 	const cursorExt = cursorProp === true ? 0.3 : 1
@@ -183,7 +189,7 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 	// For componentDidUpdate
 	useEffect(() => {
 		drawCanvas()
-	}) // Runs on every update, or you can specify dependencies
+	}) // Runs on every update
 
 	const eventToValue = (
 		e:
@@ -267,6 +273,7 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 		document.removeEventListener('touchmove', handleTouchMove)
 		document.removeEventListener('touchend', handleTouchEnd)
 		document.removeEventListener('touchcancel', handleTouchEnd)
+		console.log('touchend')
 	}
 
 	const handleEsc = (e: KeyboardEvent) => {
@@ -317,7 +324,7 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 		if (canvasRef.current) {
 			const ctx = canvasRef.current.getContext('2d')
 			if (ctx) {
-				const scale = getCanvasScale(ctx) // Assuming getCanvasScale is defined
+				const scale = getCanvasScale(ctx)
 				canvasRef.current.width = w * scale // clears the canvas
 				canvasRef.current.height = h * scale
 				ctx.scale(scale, scale)
@@ -354,11 +361,6 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 		}
 	}
 
-	// Usage inside the component:
-	// useEffect(() => {
-	//   drawCanvas()
-	// }, [w, h, thickness, lineCap, bgColor, fgColor, value, startAngle, endAngle]) // Add dependencies as needed
-
 	const renderCenter = (props: any) => {
 		const {
 			displayCustom,
@@ -368,16 +370,15 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 			sixLevels,
 		} = props
 
-		console.log('sixLevels in renderCenter', sixLevels)
-
 		if (displayInput) {
+			console.log(inputStyle())
 			return (
 				<input
-					style={inputStyle()} // Assuming inputStyle is defined in the component
+					style={inputStyle()}
 					type='text'
 					value={sixLevels}
-					onChange={handleTextInput} // Assuming handleTextInput is defined in the component
-					onKeyDown={handleArrowKey} // Assuming handleArrowKey is defined in the component
+					onChange={handleTextInput}
+					onKeyDown={handleArrowKey}
 					readOnly={readOnly || disableTextInput}
 				/>
 			)
@@ -409,8 +410,9 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 		position: 'absolute',
 		verticalAlign: 'middle',
 		marginTop: `${(w / 3) >> 0}px`,
-		marginLeft: `-${((w * 3) / 4 + 2) >> 0}px`,
-		border: 0,
+		// marginLeft: `${((w * 3) / 4 + 2) >> 0}px`,
+		marginLeft: `${(w / 4) >> 0}px`,
+		border: 'none',
 		background: 'none',
 		font: `${fontWeight} ${(w / digits) >> 0}px ${font}`,
 		textAlign: 'center',
@@ -420,21 +422,22 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 	})
 
 	let sixLevels = computeSixLevels(value)
-	console.log('sixLevels', sixLevels)
-	console.log(typeof value)
-	console.log(typeof sixLevels)
 
 	return (
 		<div
 			className={className}
-			style={{ width: w, height: h, display: 'inline-block' }} // Assuming w and h are defined in the component
+			style={{
+				width: w,
+				height: h,
+				display: 'inline-block',
+				position: 'relative',
+			}}
 			onWheel={readOnly || disableMouseWheel ? undefined : handleWheel}
-			// Assuming handleWheel is defined in the component
 		>
 			<canvas
 				ref={canvasRef}
 				className={canvasClassName}
-				style={{ width: '100%', height: '100%' }}
+				style={{ width: '100%', height: '100%', position: 'absolute' }}
 				onMouseDown={readOnly ? undefined : handleMouseDown}
 				title={title ? `${title}: ${value}` : value.toString()}
 			/>
@@ -446,6 +449,14 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 				readOnly,
 				sixLevels,
 			})}
+			<div>
+				<Image
+					src='/assets/images/megaknob07.png'
+					alt='Knob'
+					width={200}
+					height={200}
+				/>
+			</div>
 		</div>
 	)
 }
