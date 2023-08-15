@@ -335,7 +335,10 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 				ctx.lineCap = lineCap
 				// background arc
 				ctx.beginPath()
-				ctx.strokeStyle = bgColor
+				// ctx.strokeStyle = bgColor
+
+				ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)'
+
 				ctx.arc(xy, xy, radius, endAngle - 0.00001, startAngle + 0.00001, true)
 				ctx.stroke()
 				// foreground arc
@@ -354,6 +357,7 @@ const ReactCanvasKnob: React.FC<KnobProps> = ({
 				)
 
 				ctx.beginPath()
+				console.log('fgColor', fgColor)
 				ctx.strokeStyle = fgColor
 				ctx.arc(xy, xy, radius, a.startAngle, a.endAngle, a.acw)
 				ctx.stroke()

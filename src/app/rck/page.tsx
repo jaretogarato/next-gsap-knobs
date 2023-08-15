@@ -74,7 +74,9 @@ const DemoRCKnob = () => {
 				thickness={0.2}
 				lineCap='round'
 				bgColor='#f0f0f0'
-				fgColor='#3498db'
+				// fgColor='#3498db'
+				fgColor='hsla(196, 73%, 50%, .75)'
+				// fgColor='red'
 				displayInput
 				angleArc={270}
 				angleOffset={-135}
