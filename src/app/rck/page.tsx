@@ -1,62 +1,30 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
-import { Draggable } from 'gsap/Draggable'
+// import { Draggable } from 'gsap/Draggable'
 // import { CSSPlugin } from 'gsap'
 import timeline from 'gsap/dist/gsap'
+import ReactCanvasKnob from '../../components/ReactCanvasKnob'
 
-gsap.registerPlugin(Draggable)
+// gsap.registerPlugin(Draggable)
 // gsap.registerPlugin(CSSPlugin)
 // gsap.registerPlugin(InertiaPlugin)
 
-export default function Home() {
+const DemoRCKnob = () => {
 	const app = useRef<HTMLDivElement | null>(null)
-	const knob = useRef<HTMLDivElement | null>(null)
+	// const knob = useRef<HTMLDivElement | null>(null)
+	const [value, setValue] = useState(50) // Initial value of the knob
+
+	const handleChange = (newValue) => {
+		setValue(newValue)
+	}
 
 	useEffect(() => {
 		gsap.to(app.current, { duration: 2, opacity: 1 })
 		console.log(app)
 	}, [])
-
-	useEffect(() => {
-		const logRotation = () => {
-			console.log(gsap.getProperty(knob.current, 'rotation'), 'from element')
-			console.log(Draggable.get(knob.current).rotation, 'from the Draggable')
-		}
-
-		const button = document.getElementById('rotation')
-		button?.addEventListener('click', logRotation)
-
-		return () => {
-			button?.removeEventListener('click', logRotation)
-		}
-	}, [])
-
-	let rotationSnap = 90
-
-	useEffect(() => {
-		console.log('knob.current', knob.current)
-		console.log('rotationSnap', rotationSnap)
-		const draggable = Draggable.create([knob.current], {
-			type: 'rotation',
-			inertia: true,
-			// onDrag: function () {
-			// 	console.log(this.rotation)
-			// },
-			snap: function (endValue: number) {
-				//this function gets called when the mouse/finger is released and it plots where rotation should normally end and we can alter that value and return a new one instead. This gives us an easy way to apply custom snapping behavior with any logic we want. In this case, just make sure the end value snaps to 90-degree increments but only when the "snap" checkbox is selected.
-				// console.log(' -> ', Math.round(endValue / rotationSnap) * rotationSnap)
-				return Math.round(endValue / rotationSnap) * rotationSnap
-			},
-		})
-	}, [])
-
-	// $('#rotation').click(function () {
-	// 	console.log(gsap.getProperty('#knob', 'rotation'), 'from element')
-	// 	console.log(Draggable.get('#knob').rotation, 'from the Draggable')
-	// })
 
 	return (
 		<main className='flex min-h-screen flex-col items-center justify-between p-24'>
@@ -68,29 +36,32 @@ export default function Home() {
 				}}
 				className='hero'
 			>
-				{/* <Image
-					className='relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert'
-					src='/next.svg'
-					alt='Next.js Logo'
-					width={180}
-					height={37}
-					priority
-				/> */}
-				<h1 className='text-5xl font-semibold'>RCK</h1>
+				<h1 className='text-5xl font-semibold'>
+					Based on <br />
+					React Canvas Knob
+				</h1>
 			</div>
 
 			<div className='knob-container'>
-				<button id='rotation'>console.log() rotation</button>
-				<br />
-				<img
-					ref={(el) => {
-						knob.current = el
-					}}
-					id='knob'
-					src='https://greensock.com/wp-content/uploads/custom/draggable/img/knob.png'
-					width='410'
-					height='410'
-				></img>
+				<ReactCanvasKnob
+					value={value}
+					onChange={handleChange}
+					min={0}
+					max={60}
+					step={1}
+					width={200}
+					height={200}
+					thickness={0.4}
+					lineCap='round'
+					bgColor='#f0f0f0'
+					fgColor='#3498db'
+					displayInput
+					angleArc={270}
+					angleOffset={-135}
+					title='Cool Knob'
+				/>
+				<p>Value: {value}</p>
+				{/* <p>Value: {computeSixLevels(value)}</p> */}
 			</div>
 
 			<div className='mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left'>
@@ -165,3 +136,5 @@ export default function Home() {
 		</main>
 	)
 }
+
+export default DemoRCKnob
