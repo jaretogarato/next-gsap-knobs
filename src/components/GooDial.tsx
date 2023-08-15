@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { Draggable } from 'gsap/Draggable'
-import { TweenMax } from 'gsap/dist'
+import { gsap } from 'gsap'
 import '/styles/goo-dial.scss'
 
 export default function GooDial() {
