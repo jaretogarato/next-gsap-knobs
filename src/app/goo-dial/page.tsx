@@ -3,6 +3,7 @@ import { gsap } from 'gsap'
 import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 import FooterNav from '../../components/FooterNav'
+import GooDial from '../../components/GooDial'
 
 export default function GooDial() {
 	const app = useRef<HTMLDivElement | null>(null)
@@ -46,15 +47,17 @@ export default function GooDial() {
 				}}
 				className='hero'
 			>
-				<Image
+				{/* <Image
 					className='relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert'
 					src='/next.svg'
 					alt='Next.js Logo'
 					width={180}
 					height={37}
 					priority
-				/>
+				/> */}
+				<h1 className='text-5xl font-semibold'>Goo Dial</h1>
 			</div>
+			<div>{/* <GooDial /> */}</div>
 			<FooterNav />
 		</main>
 	)
