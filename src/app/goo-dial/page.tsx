@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 import FooterNav from '../../components/FooterNav'
 import GooDial from '../../components/GooDial'
 
-export default function GooDial() {
+export default function GooDialPage() {
 	const app = useRef<HTMLDivElement | null>(null)
 	const knob = useRef<HTMLDivElement | null>(null)
 
@@ -57,7 +57,9 @@ export default function GooDial() {
 				/> */}
 				<h1 className='text-5xl font-semibold'>Goo Dial</h1>
 			</div>
-			<div>{/* <GooDial /> */}</div>
+			<div>
+				<GooDial />
+			</div>
 			<FooterNav />
 		</main>
 	)
