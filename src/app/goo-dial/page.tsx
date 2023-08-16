@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 import FooterNav from '../../components/FooterNav'
 import GooDial from '../../components/GooDial'
+import SimpleCircle from '../../components/SimpleCircle'
 
 export default function GooDialPage() {
 	const app = useRef<HTMLDivElement | null>(null)
@@ -47,18 +48,11 @@ export default function GooDialPage() {
 				}}
 				className='hero'
 			>
-				{/* <Image
-					className='relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert'
-					src='/next.svg'
-					alt='Next.js Logo'
-					width={180}
-					height={37}
-					priority
-				/> */}
 				<h1 className='text-5xl font-semibold'>Goo Dial</h1>
 			</div>
 			<div>
-				<GooDial />
+				{/* <GooDial /> */}
+				<SimpleCircle />
 			</div>
 			<FooterNav />
 		</main>

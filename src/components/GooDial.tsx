@@ -2,11 +2,8 @@
 import { useRef, useLayoutEffect } from 'react'
 import { gsap } from 'gsap'
 import { Draggable } from 'gsap/Draggable'
-// import DrawSVGPlugin from '../utils/gsap/DrawSVGPlugin'
-const DrawSVG = require('../utils/gsap/DrawSVGPlugin')
 
 gsap.registerPlugin(Draggable)
-gsap.registerPlugin(DrawSVG)
 
 export default function GooDial() {
 	const comp = useRef<HTMLDivElement>(null)
@@ -14,7 +11,7 @@ export default function GooDial() {
 	const svgRef = useRef<SVGSVGElement | null>(null)
 	const dialRotation = useRef<number>(0)
 	const dial = useRef<SVGGElement | null>(null)
-	const dragPattern = useRef(null)
+	// const dragPattern = useRef(null)
 	const patternOverlay = useRef(null)
 	const display = useRef<SVGTextElement | null>(null)
 	const dragger = useRef(null)
@@ -24,7 +21,6 @@ export default function GooDial() {
 	const dialGripB = useRef(null)
 
 	useLayoutEffect(() => {
-		// Create timeline
 		tl.current = gsap.timeline()
 
 		if (comp.current) {
@@ -33,29 +29,15 @@ export default function GooDial() {
 				const dialElement = dial.current
 				const dialGripAElement = dialGripA.current
 				const dialGripBElement = dialGripB.current
-				const dragPatternElement = dragPattern.current
+				// const dragPatternElement = dragPattern.current
 				const patternOverlayElement = patternOverlay.current
 				const displayElement = display.current
 				const draggerElement = dragger.current
 				const displayContainerElement = displayContainer.current
-				const outlineElement = outline.current
+				const outlineElement = outline.current as unknown as SVGPathElement
+				const pathLength = outlineElement ? outlineElement.getTotalLength() : 0
 
-				gsap.set('svg', { visibility: 'visible' })
-
-				// Scope animations to comp ref
-
-				if (dialElement) {
-					Draggable.create(dialElement, {
-						type: 'rotation',
-						bounds: { minRotation: 0, maxRotation: 360 },
-						onDrag: update,
-						onThrowUpdate: update,
-						throwResistance: 0.1,
-						throwProps: true,
-					})
-				}
-
-				function update(draggable: Draggable) {
+				const update = (draggable: Draggable) => {
 					const percent: number = draggable.rotation
 						? draggable.rotation / 360
 						: 0
@@ -80,30 +62,50 @@ export default function GooDial() {
 						stagger: 0.6,
 					})
 
-					var draw = '0% ' + percent * 100 + '%'
-					gsap.set([outlineElement], {
-						drawSVG: draw,
-					})
+					// gsap.to(dragPatternElement, {
+					// 	duration: 1,
+					// 	attr: {
+					// 		x: Math.round(percent * 1000),
+					// 		ease: 'sine.easeOut',
+					// 	},
+					// })
 
-					gsap.to(dragPatternElement, {
-						duration: 1,
-						attr: {
-							x: Math.round(percent * 1000),
-							ease: 'sine.easeOut',
-						},
-					})
-
-					gsap.to(dragPatternElement, {
-						duration: 0.5,
-						attr: {
-							y: Math.round(percent * 1000),
-							ease: 'sine.easeOut',
-						},
-					})
+					// gsap.to(dragPatternElement, {
+					// 	duration: 0.5,
+					// 	attr: {
+					// 		y: Math.round(percent * 1000),
+					// 		ease: 'sine.easeOut',
+					// 	},
+					// })
 
 					if (display.current) {
 						display.current.textContent = Math.round(percent * 100).toString()
 					}
+
+					// Calculate new stroke-dashoffset based on the rotation
+					const draw = pathLength - pathLength * percent
+
+					if (outlineElement) {
+						outlineElement.style.strokeDashoffset = draw.toString()
+					}
+				}
+
+				gsap.set('svg', { visibility: 'visible' })
+
+				if (dialElement) {
+					if (outlineElement) {
+						outlineElement.style.strokeDasharray = pathLength + ' ' + pathLength
+						outlineElement.style.strokeDashoffset = pathLength.toString()
+					}
+
+					Draggable.create(dialElement, {
+						type: 'rotation',
+						bounds: { minRotation: 0, maxRotation: 360 },
+						onDrag: update,
+						onThrowUpdate: update,
+						throwResistance: 0.1,
+						throwProps: true,
+					})
 				}
 			}, comp)
 
@@ -115,7 +117,7 @@ export default function GooDial() {
 		<div
 			className='comp'
 			ref={comp}
-			style={{ width: '200px', height: '200px', border: '1px solid orange' }}
+			style={{ width: '500px', height: '500px', border: '1px solid orange' }}
 		>
 			<svg
 				ref={svgRef}
@@ -125,7 +127,7 @@ export default function GooDial() {
 				<defs>
 					<pattern
 						id='dragPattern'
-						ref={dragPattern}
+						// ref={dragPattern}
 						width='14'
 						height='24.5'
 						x='0'
@@ -139,7 +141,7 @@ export default function GooDial() {
 							</g>
 						</g>
 					</pattern>
-					<filter id='goo'>
+					{/* <filter id='goo'>
 						<feGaussianBlur in='SourceGraphic' stdDeviation='8' result='blur' />
 						<feColorMatrix
 							in='blur'
@@ -148,7 +150,7 @@ export default function GooDial() {
 							result='cm'
 						/>
 						<feBlend />
-					</filter>
+					</filter> */}
 				</defs>
 				<path
 					className='outlineBG'
