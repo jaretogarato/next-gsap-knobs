@@ -63,14 +63,24 @@ export default function GooDial() {
 				const update = function (this: Draggable) {
 					const percent: number = this.rotation ? this.rotation / 360 : 0
 					dialRotation.current = this.rotation
+
 					console.log('xx dialRotation.current: ', dialRotation.current)
 
-					gsap.set(
-						[draggerElement, displayContainerElement, patternOverlayElement],
-						{
-							rotation: dialRotation.current,
-						}
-					)
+					// const rotateElements = [
+					// 	draggerElement,
+					// 	displayContainerElement,
+					// 	patternOverlayElement,
+					// ]
+					// const rotationValue = dialRotation.current
+
+					gsap.set([displayContainerElement], {
+						rotation: dialRotation.current,
+					})
+
+					gsap.to([draggerElement, patternOverlayElement], {
+						duration: 0.3,
+						rotation: dialRotation.current,
+					})
 
 					gsap.set(displayElement, {
 						rotation: 360 - (dialRotation.current || 0),
@@ -80,6 +90,14 @@ export default function GooDial() {
 						duration: 0.6,
 						rotation: function (i: number) {
 							return i === 0 ? -dialRotation.current : dialRotation.current * 2
+						},
+						stagger: 0.6,
+					})
+
+					gsap.to(dialGripBElement, {
+						duration: 0.6,
+						rotation: function (i: number) {
+							return i === 0 ? dialRotation.current : -dialRotation.current * 2
 						},
 						stagger: 0.6,
 					})
