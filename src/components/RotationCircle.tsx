@@ -6,6 +6,7 @@ gsap.registerPlugin(Draggable)
 
 export default function RotatingDial() {
 	const comp = useRef<HTMLDivElement>(null)
+	const dialRef = useRef<SVGCircleElement>(null)
 	const circleRef = useRef<SVGCircleElement>(null)
 	const centerX = 200
 	const centerY = 200
@@ -54,6 +55,7 @@ export default function RotatingDial() {
 		>
 			<svg viewBox='0 0 400 400'>
 				<circle
+					ref={dialRef}
 					cx={centerX}
 					cy={centerY}
 					r={pathRadius}

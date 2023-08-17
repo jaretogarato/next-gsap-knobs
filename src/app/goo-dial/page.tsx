@@ -52,7 +52,7 @@ export default function GooDialPage() {
 				<h1 className='text-5xl font-semibold'>Goo Dial</h1>
 			</div>
 			<div>
-				{/* <GooDial /> */}
+				<GooDial />
 				{/* <SimpleCircle /> */}
 				<RotationCircle />
 			</div>

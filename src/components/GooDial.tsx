@@ -37,11 +37,10 @@ export default function GooDial() {
 				const outlineElement = outline.current as unknown as SVGPathElement
 				const pathLength = outlineElement ? outlineElement.getTotalLength() : 0
 
-				const update = (draggable: Draggable) => {
-					const percent: number = draggable.rotation
-						? draggable.rotation / 360
-						: 0
-					dialRotation.current = draggable.rotation
+				const update = function (this: Draggable) {
+					const percent: number = this.rotation ? this.rotation / 360 : 0
+					dialRotation.current = this.rotation
+					console.log('xx dialRotation.current: ', dialRotation.current)
 
 					gsap.set(
 						[draggerElement, displayContainerElement, patternOverlayElement],
@@ -238,6 +237,7 @@ export default function GooDial() {
 						cy='300'
 						r='223'
 						fill='transparent'
+						// fill='#fff'
 					/>
 				</g>
 			</svg>
