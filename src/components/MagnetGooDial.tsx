@@ -5,7 +5,7 @@ import { Draggable } from 'gsap/Draggable'
 
 gsap.registerPlugin(Draggable)
 
-export default function GooDial() {
+export default function MagnetGooDial() {
 	const comp = useRef<HTMLDivElement>(null)
 	const tl = useRef<gsap.core.Timeline>(gsap.timeline())
 	const svgRef = useRef<SVGSVGElement | null>(null)
