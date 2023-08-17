@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react'
 import FooterNav from '../../components/FooterNav'
 import GooDial from '../../components/GooDial'
 import SimpleCircle from '../../components/SimpleCircle'
+import RotationCircle from '../../components/RotationCircle'
 
 export default function GooDialPage() {
 	const app = useRef<HTMLDivElement | null>(null)
@@ -52,7 +53,8 @@ export default function GooDialPage() {
 			</div>
 			<div>
 				{/* <GooDial /> */}
-				<SimpleCircle />
+				{/* <SimpleCircle /> */}
+				<RotationCircle />
 			</div>
 			<FooterNav />
 		</main>

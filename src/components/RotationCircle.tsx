@@ -14,36 +14,29 @@ export default function RotatingDial() {
 	useLayoutEffect(() => {
 		// Create the GSAP context
 		let ctx = gsap.context(() => {
-			const updatePosition = (x: number, y: number, animate = true) => {
-				const dx = x - centerX
-				const dy = y - centerY
-				const angle = Math.atan2(dy, dx)
+			const updatePosition = (rotation: number) => {
+				const angle = (rotation * Math.PI) / 180 // Convert to radians
 				const newX = centerX + pathRadius * Math.cos(angle)
 				const newY = centerY + pathRadius * Math.sin(angle)
-				// if (animate) {
-				// 	gsap.to(circleRef.current, { x: newX, y: newY })
-				// } else {
-				// 	gsap.set(circleRef.current, { x: newX, y: newY })
-				// }
 				gsap.set(circleRef.current, { x: newX, y: newY })
 			}
 
 			// Set initial position without animation
-			updatePosition(centerX + pathRadius, centerY, false)
+			updatePosition(0)
 
-			// const dragUpdate = (draggable: Draggable) => {
-			// 	console.log('draggable.x: ', draggable.x, 'draggable.y: ', draggable.y)
-			// }
+			const dragUpdate = function (this: Draggable) {
+				console.log('this.rotation: ', this.rotation)
+				updatePosition(this.rotation)
+			}
 
 			if (circleRef.current) {
 				Draggable.create(circleRef.current, {
-					type: 'x,y',
-					bounds: { top: 0, left: 0, width: 400, height: 400 },
-					// onDrag: dragUpdate,
-					onDrag: function () {
-						updatePosition(this.x, this.y)
-						console.log('this.x: ', this.x, 'this.y: ', this.y)
-					},
+					type: 'rotation',
+					bounds: { minRotation: 0, maxRotation: 360 },
+					onDrag: dragUpdate,
+					// onDrag: function () {
+					// 	updatePosition(this.rotation)
+					// },
 					dragResistance: 0.1,
 					throwResistance: 1,
 					overshootTolerance: 0,
