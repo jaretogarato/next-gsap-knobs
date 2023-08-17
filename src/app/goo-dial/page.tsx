@@ -54,7 +54,7 @@ export default function GooDialPage() {
 			<div>
 				<GooDial />
 				{/* <SimpleCircle /> */}
-				<RotationCircle />
+				{/* <RotationCircle /> */}
 			</div>
 			<FooterNav />
 		</main>

@@ -11,12 +11,13 @@ export default function GooDial() {
 	const svgRef = useRef<SVGSVGElement | null>(null)
 	const dialRotation = useRef<number>(0)
 	const dial = useRef<SVGGElement | null>(null)
-	// const dragPattern = useRef(null)
+	const dragPattern = useRef(null)
 	const patternOverlay = useRef(null)
 	const display = useRef<SVGTextElement | null>(null)
 	const dragger = useRef(null)
 	const displayContainer = useRef(null)
 	const outline = useRef(null)
+	const outlineBG = useRef(null)
 	const dialGripA = useRef(null)
 	const dialGripB = useRef(null)
 
@@ -29,13 +30,35 @@ export default function GooDial() {
 				const dialElement = dial.current
 				const dialGripAElement = dialGripA.current
 				const dialGripBElement = dialGripB.current
-				// const dragPatternElement = dragPattern.current
+				const dragPatternElement = dragPattern.current
 				const patternOverlayElement = patternOverlay.current
 				const displayElement = display.current
 				const draggerElement = dragger.current
 				const displayContainerElement = displayContainer.current
 				const outlineElement = outline.current as unknown as SVGPathElement
+				const outlineBGElement = outlineBG.current as unknown as SVGPathElement
 				const pathLength = outlineElement ? outlineElement.getTotalLength() : 0
+
+				// Set the transform origins
+				gsap.set(
+					[
+						dialElement,
+						draggerElement,
+						displayElement,
+						dialGripAElement,
+						dialGripBElement,
+					],
+					{
+						transformOrigin: '50% 50%',
+					}
+				)
+
+				gsap.set(
+					[displayContainerElement, draggerElement, patternOverlayElement],
+					{
+						svgOrigin: '400 300',
+					}
+				)
 
 				const update = function (this: Draggable) {
 					const percent: number = this.rotation ? this.rotation / 360 : 0
@@ -61,21 +84,21 @@ export default function GooDial() {
 						stagger: 0.6,
 					})
 
-					// gsap.to(dragPatternElement, {
-					// 	duration: 1,
-					// 	attr: {
-					// 		x: Math.round(percent * 1000),
-					// 		ease: 'sine.easeOut',
-					// 	},
-					// })
+					gsap.to(dragPatternElement, {
+						duration: 1,
+						attr: {
+							x: Math.round(percent * 1000),
+							ease: 'sine.easeOut',
+						},
+					})
 
-					// gsap.to(dragPatternElement, {
-					// 	duration: 0.5,
-					// 	attr: {
-					// 		y: Math.round(percent * 1000),
-					// 		ease: 'sine.easeOut',
-					// 	},
-					// })
+					gsap.to(dragPatternElement, {
+						duration: 0.5,
+						attr: {
+							y: Math.round(percent * 1000),
+							ease: 'sine.easeOut',
+						},
+					})
 
 					if (display.current) {
 						display.current.textContent = Math.round(percent * 100).toString()
@@ -86,6 +109,10 @@ export default function GooDial() {
 
 					if (outlineElement) {
 						outlineElement.style.strokeDashoffset = draw.toString()
+					}
+
+					if (outlineBGElement) {
+						outlineBGElement.style.strokeDashoffset = draw.toString()
 					}
 				}
 
@@ -102,8 +129,11 @@ export default function GooDial() {
 						bounds: { minRotation: 0, maxRotation: 360 },
 						onDrag: update,
 						onThrowUpdate: update,
+						dragResistance: 0.1,
 						throwResistance: 0.1,
+						overshootTolerance: 0,
 						throwProps: true,
+						transformOrigin: '400px 400px', // Center of rotation
 					})
 				}
 			}, comp)
@@ -116,7 +146,12 @@ export default function GooDial() {
 		<div
 			className='comp'
 			ref={comp}
-			style={{ width: '500px', height: '500px', border: '1px solid orange' }}
+			style={{
+				width: '400px',
+				height: '300px',
+				border: '1px solid orange',
+				position: 'relative',
+			}}
 		>
 			<svg
 				ref={svgRef}
@@ -126,7 +161,7 @@ export default function GooDial() {
 				<defs>
 					<pattern
 						id='dragPattern'
-						// ref={dragPattern}
+						ref={dragPattern}
 						width='14'
 						height='24.5'
 						x='0'
@@ -140,7 +175,7 @@ export default function GooDial() {
 							</g>
 						</g>
 					</pattern>
-					{/* <filter id='goo'>
+					<filter id='goo'>
 						<feGaussianBlur in='SourceGraphic' stdDeviation='8' result='blur' />
 						<feColorMatrix
 							in='blur'
@@ -149,10 +184,11 @@ export default function GooDial() {
 							result='cm'
 						/>
 						<feBlend />
-					</filter> */}
+					</filter>
 				</defs>
 				<path
 					className='outlineBG'
+					ref={outlineBG}
 					d='M400,121.5A178.5,178.5,0,1,1,221.5,300,178.5,178.5,0,0,1,400,121.5'
 					fill='none'
 					stroke='#4DB5AE'
@@ -203,7 +239,11 @@ export default function GooDial() {
 						ref={display}
 						x='400'
 						y='301'
+						fontSize='40' // Add this line to set the font size
+						fill='#000' // Add this line to set the text color
 						opacity='1'
+						stroke='#f00'
+						strokeWidth='1'
 					></text>
 				</g>
 				<circle
@@ -237,7 +277,7 @@ export default function GooDial() {
 						cy='300'
 						r='223'
 						fill='transparent'
-						// fill='#fff'
+						stroke='none'
 					/>
 				</g>
 			</svg>
