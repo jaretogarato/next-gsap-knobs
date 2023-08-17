@@ -11,8 +11,6 @@ export default function MagnetGooDial() {
 	const svgRef = useRef<SVGSVGElement | null>(null)
 	const dialRotation = useRef<number>(0)
 	const dial = useRef<SVGGElement | null>(null)
-	const dragPattern = useRef(null)
-	const patternOverlay = useRef(null)
 	const display = useRef<SVGTextElement | null>(null)
 	const dragger = useRef(null)
 	const displayContainer = useRef(null)
@@ -30,8 +28,6 @@ export default function MagnetGooDial() {
 				const dialElement = dial.current
 				const dialGripAElement = dialGripA.current
 				const dialGripBElement = dialGripB.current
-				const dragPatternElement = dragPattern.current
-				const patternOverlayElement = patternOverlay.current
 				const displayElement = display.current
 				const draggerElement = dragger.current
 				const displayContainerElement = displayContainer.current
@@ -53,12 +49,9 @@ export default function MagnetGooDial() {
 					}
 				)
 
-				gsap.set(
-					[displayContainerElement, draggerElement, patternOverlayElement],
-					{
-						svgOrigin: '400 300',
-					}
-				)
+				gsap.set([displayContainerElement, draggerElement], {
+					svgOrigin: '400 300',
+				})
 
 				const update = function (this: Draggable) {
 					const percent: number = this.rotation ? this.rotation / 360 : 0
@@ -70,7 +63,7 @@ export default function MagnetGooDial() {
 						rotation: dialRotation.current,
 					})
 
-					gsap.to([draggerElement, patternOverlayElement], {
+					gsap.to([draggerElement], {
 						duration: 0.3,
 						rotation: dialRotation.current,
 					})
@@ -93,22 +86,6 @@ export default function MagnetGooDial() {
 							return i === 0 ? dialRotation.current : -dialRotation.current * 2
 						},
 						stagger: 0.6,
-					})
-
-					gsap.to(dragPatternElement, {
-						duration: 1,
-						attr: {
-							x: Math.round(percent * 1000),
-							ease: 'sine.easeOut',
-						},
-					})
-
-					gsap.to(dragPatternElement, {
-						duration: 0.5,
-						attr: {
-							y: Math.round(percent * 1000),
-							ease: 'sine.easeOut',
-						},
 					})
 
 					if (display.current) {
@@ -176,22 +153,6 @@ export default function MagnetGooDial() {
 				xmlns='http://www.w3.org/2000/svg'
 			>
 				<defs>
-					<pattern
-						id='dragPattern'
-						ref={dragPattern}
-						width='14'
-						height='24.5'
-						x='0'
-						y='0'
-						patternUnits='userSpaceOnUse'
-						viewBox='0 0 28 49'
-					>
-						<g fillRule='evenodd'>
-							<g id='hexagons' fillRule='nonzero' fill='#4DB5AE'>
-								<path d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z' />
-							</g>
-						</g>
-					</pattern>
 					<filter id='goo'>
 						<feGaussianBlur in='SourceGraphic' stdDeviation='8' result='blur' />
 						<feColorMatrix
@@ -238,18 +199,6 @@ export default function MagnetGooDial() {
 						/>
 					</g>
 				</g>
-
-				<circle
-					className='patternOverlay'
-					ref={patternOverlay}
-					cx='400'
-					cy='121'
-					r='26'
-					fill='url(#dragPattern)'
-					stroke='none'
-					strokeWidth='0'
-					opacity='1'
-				/>
 				<g className='displayContainer' ref={displayContainer}>
 					<text
 						className='display'
