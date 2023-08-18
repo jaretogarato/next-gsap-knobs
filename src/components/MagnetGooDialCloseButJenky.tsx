@@ -9,7 +9,7 @@ export default function MagnetGooDial() {
 	const comp = useRef<HTMLDivElement>(null)
 	const tl = useRef<gsap.core.Timeline>(gsap.timeline())
 	const svgRef = useRef<SVGSVGElement | null>(null)
-	const dialRotation = useRef<number>(270)
+	const dialRotation = useRef<number>(0)
 	const dial = useRef<SVGGElement | null>(null)
 	const display = useRef<SVGTextElement | null>(null)
 	const dragger = useRef(null)
@@ -49,19 +49,15 @@ export default function MagnetGooDial() {
 					}
 				)
 
-				gsap.set([displayContainerElement, draggerElement, outlineElement], {
+				gsap.set([displayContainerElement, draggerElement], {
 					svgOrigin: '400 300',
 				})
 
-				// get relevant elements in the right starting position
-				gsap.set([dialElement, draggerElement], {
-					rotation: dialRotation.current,
-				})
-				gsap.set([outlineElement], { rotation: dialRotation.current })
-
 				const update = function (this: Draggable) {
-					const percent: number = this.rotation ? this.rotation / 360 : 0
-					dialRotation.current = this.rotation
+					// const percent: number = this.rotation ? this.rotation / 360 : 0
+					// dialRotation.current = this.rotation
+					const percent: number = this.rotation ? -this.rotation / 360 : 0 // Reverse the rotation value
+					dialRotation.current = -this.rotation // Reverse the rotation value
 
 					console.log('xx dialRotation.current: ', dialRotation.current)
 
@@ -71,7 +67,7 @@ export default function MagnetGooDial() {
 
 					gsap.to([draggerElement], {
 						duration: 0.3,
-						rotation: dialRotation.current,
+						rotation: -dialRotation.current,
 					})
 
 					gsap.set(displayElement, {
@@ -100,25 +96,21 @@ export default function MagnetGooDial() {
 
 					// Calculate new stroke-dashoffset based on the rotation
 					// const draw = pathLength - pathLength * (dialRotation.current / 360)
-					const rotationProgress = (dialRotation.current + 90) / 180
-					console.log('rotationProgress: ', rotationProgress)
-
-					const draw = -rotationProgress * (pathLength / 2)
-					console.log('draw: ', draw)
+					const draw = pathLength - pathLength * (-dialRotation.current / 360) // Reverse the rotation value
 
 					gsap.to(outlineElement, {
 						duration: 0.3, // Same duration as the other animations
 						strokeDashoffset: draw,
-						ease: 'sine.easeOut', // Choose an appropriate easing, or omit for a linear transition
+						ease: 'sine.easeOut',
 					})
-
-					if (outlineBGElement) {
-						outlineBGElement.style.strokeDashoffset = draw.toString()
-					}
 
 					// if (outlineElement) {
 					// 	outlineElement.style.strokeDashoffset = draw.toString()
 					// }
+
+					if (outlineBGElement) {
+						outlineBGElement.style.strokeDashoffset = draw.toString()
+					}
 				}
 
 				gsap.set('svg', { visibility: 'visible' })
@@ -131,7 +123,8 @@ export default function MagnetGooDial() {
 
 					Draggable.create(dialElement, {
 						type: 'rotation',
-						bounds: { minRotation: 270, maxRotation: 90 },
+						// bounds: { minRotation: 0, maxRotation: 360 },
+						bounds: { minRotation: -180, maxRotation: 0 },
 						onDrag: update,
 						onThrowUpdate: update,
 						dragResistance: 0.1,
@@ -156,6 +149,7 @@ export default function MagnetGooDial() {
 				height: '300px',
 				border: '1px solid orange',
 				position: 'relative',
+				transform: 'rotate(-90deg)',
 			}}
 		>
 			<svg
