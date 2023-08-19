@@ -97,7 +97,6 @@ export default function MagnetGooDial() {
 				}
 
 				function goToClosestAnchor() {
-					console.log('goToClosestAnchor()')
 					let reference = dialRotation.current
 
 					if (anchors.length === 0) {
@@ -121,36 +120,15 @@ export default function MagnetGooDial() {
 					dialRotation.current = closestAnchor
 
 					// Retrieve the Draggable instance for the dial element
+					// const draggableInstance = Draggable.get(dial.current) as Draggable
 					const draggableInstance = Draggable.get(dial.current) as Draggable
 
 					// Manually update the rotation of the draggable instance
-					draggableInstance.rotation = closestAnchor
+					;(draggableInstance as any).rotation = closestAnchor
 
 					// Call the update function using the draggable instance as the context
 					update.call(draggableInstance)
 				}
-
-				// function goToClosestAnchor() {
-				// 	console.log('goToClosestAnchor()')
-				// 	let reference = dialRotation.current
-
-				// 	if (anchors.length === 0) {
-				// 		throw new Error('Array must contain at least one number.')
-				// 	}
-
-				// 	let closestAnchor = anchors[0]
-				// 	let minimumDifference = Math.abs(reference - closestAnchor)
-
-				// 	anchors.forEach((anchor) => {
-				// 		const difference = Math.abs(reference - anchor)
-				// 		if (difference < minimumDifference) {
-				// 			closestAnchor = anchor
-				// 			minimumDifference = difference
-				// 		}
-				// 	})
-				// 	console.log('closestAnchor: ', closestAnchor)
-				// 	console.log('minimumDifference: ', minimumDifference)
-				// }
 
 				//-------------------------//
 				gsap.set(
