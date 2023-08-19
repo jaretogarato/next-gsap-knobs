@@ -2,6 +2,7 @@
 import { useRef, useLayoutEffect } from 'react'
 import { gsap } from 'gsap'
 import { Draggable } from 'gsap/Draggable'
+import '../styles/goo-dial.css'
 
 gsap.registerPlugin(Draggable)
 
@@ -18,6 +19,8 @@ export default function MagnetGooDial() {
 	const outlineBG = useRef(null)
 	const dialGripA = useRef(null)
 	const dialGripB = useRef(null)
+
+	const attractors = [105, 135, 165, 195, 225, 255]
 
 	useLayoutEffect(() => {
 		tl.current = gsap.timeline()
@@ -60,10 +63,10 @@ export default function MagnetGooDial() {
 				gsap.set([outlineElement], { rotation: dialRotation.current })
 
 				const update = function (this: Draggable) {
-					const percent: number = this.rotation ? this.rotation / 360 : 0
+					const percent: number = this.rotation
+						? -(this.rotation - 270) / 180
+						: 0
 					dialRotation.current = this.rotation
-
-					console.log('xx dialRotation.current: ', dialRotation.current)
 
 					gsap.set([displayContainerElement], {
 						rotation: dialRotation.current,
@@ -98,8 +101,6 @@ export default function MagnetGooDial() {
 						display.current.textContent = Math.round(percent * 100).toString()
 					}
 
-					// Calculate new stroke-dashoffset based on the rotation
-					// const draw = pathLength - pathLength * (dialRotation.current / 360)
 					const rotationProgress = (dialRotation.current + 90) / 180
 					console.log('rotationProgress: ', rotationProgress)
 
@@ -107,18 +108,14 @@ export default function MagnetGooDial() {
 					console.log('draw: ', draw)
 
 					gsap.to(outlineElement, {
-						duration: 0.3, // Same duration as the other animations
+						duration: 0.3,
 						strokeDashoffset: draw,
-						ease: 'sine.easeOut', // Choose an appropriate easing, or omit for a linear transition
+						ease: 'sine.easeOut',
 					})
 
 					if (outlineBGElement) {
 						outlineBGElement.style.strokeDashoffset = draw.toString()
 					}
-
-					// if (outlineElement) {
-					// 	outlineElement.style.strokeDashoffset = draw.toString()
-					// }
 				}
 
 				gsap.set('svg', { visibility: 'visible' })
