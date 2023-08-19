@@ -20,7 +20,12 @@ export default function MagnetGooDial() {
 	const dialGripA = useRef(null)
 	const dialGripB = useRef(null)
 
-	const attractors = [105, 135, 165, 195, 225, 255]
+	const anchors = [105, 135, 165, 195, 225, 255]
+
+	// type ClosestAnchorResult = {
+	// 	closestAnchor: number
+	// 	difference: number
+	// }
 
 	useLayoutEffect(() => {
 		tl.current = gsap.timeline()
@@ -38,34 +43,13 @@ export default function MagnetGooDial() {
 				const outlineBGElement = outlineBG.current as unknown as SVGPathElement
 				const pathLength = outlineElement ? outlineElement.getTotalLength() : 0
 
-				// Set the transform origins
-				gsap.set(
-					[
-						dialElement,
-						draggerElement,
-						displayElement,
-						dialGripAElement,
-						dialGripBElement,
-					],
-					{
-						transformOrigin: '50% 50%',
-					}
-				)
-
-				gsap.set([displayContainerElement, draggerElement, outlineElement], {
-					svgOrigin: '400 300',
-				})
-
-				// get relevant elements in the right starting position
-				gsap.set([dialElement, draggerElement], {
-					rotation: dialRotation.current,
-				})
-				gsap.set([outlineElement], { rotation: dialRotation.current })
-
 				const update = function (this: Draggable) {
+					const rotationProgress = (dialRotation.current + 90) / 180
+					const draw = -rotationProgress * (pathLength / 2)
 					const percent: number = this.rotation
 						? -(this.rotation - 270) / 180
 						: 0
+
 					dialRotation.current = this.rotation
 
 					gsap.set([displayContainerElement], {
@@ -101,12 +85,6 @@ export default function MagnetGooDial() {
 						display.current.textContent = Math.round(percent * 100).toString()
 					}
 
-					const rotationProgress = (dialRotation.current + 90) / 180
-					console.log('rotationProgress: ', rotationProgress)
-
-					const draw = -rotationProgress * (pathLength / 2)
-					console.log('draw: ', draw)
-
 					gsap.to(outlineElement, {
 						duration: 0.3,
 						strokeDashoffset: draw,
@@ -118,6 +96,83 @@ export default function MagnetGooDial() {
 					}
 				}
 
+				function goToClosestAnchor() {
+					console.log('goToClosestAnchor()')
+					let reference = dialRotation.current
+
+					if (anchors.length === 0) {
+						throw new Error('Array must contain at least one number.')
+					}
+
+					let closestAnchor = anchors[0]
+					let minimumDifference = Math.abs(reference - closestAnchor)
+
+					anchors.forEach((anchor) => {
+						const difference = Math.abs(reference - anchor)
+						if (difference < minimumDifference) {
+							closestAnchor = anchor
+							minimumDifference = difference
+						}
+					})
+					console.log('closestAnchor: ', closestAnchor)
+					console.log('minimumDifference: ', minimumDifference)
+
+					// Set dialRotation to the closest anchor
+					dialRotation.current = closestAnchor
+
+					// Retrieve the Draggable instance for the dial element
+					const draggableInstance = Draggable.get(dial.current) as Draggable
+
+					// Manually update the rotation of the draggable instance
+					draggableInstance.rotation = closestAnchor
+
+					// Call the update function using the draggable instance as the context
+					update.call(draggableInstance)
+				}
+
+				// function goToClosestAnchor() {
+				// 	console.log('goToClosestAnchor()')
+				// 	let reference = dialRotation.current
+
+				// 	if (anchors.length === 0) {
+				// 		throw new Error('Array must contain at least one number.')
+				// 	}
+
+				// 	let closestAnchor = anchors[0]
+				// 	let minimumDifference = Math.abs(reference - closestAnchor)
+
+				// 	anchors.forEach((anchor) => {
+				// 		const difference = Math.abs(reference - anchor)
+				// 		if (difference < minimumDifference) {
+				// 			closestAnchor = anchor
+				// 			minimumDifference = difference
+				// 		}
+				// 	})
+				// 	console.log('closestAnchor: ', closestAnchor)
+				// 	console.log('minimumDifference: ', minimumDifference)
+				// }
+
+				//-------------------------//
+				gsap.set(
+					[
+						dialElement,
+						draggerElement,
+						displayElement,
+						dialGripAElement,
+						dialGripBElement,
+					],
+					{
+						transformOrigin: '50% 50%',
+					}
+				)
+
+				gsap.set([displayContainerElement, draggerElement, outlineElement], {
+					svgOrigin: '400 300',
+				})
+				gsap.set([dialElement, draggerElement], {
+					rotation: dialRotation.current,
+				})
+				gsap.set([outlineElement], { rotation: dialRotation.current })
 				gsap.set('svg', { visibility: 'visible' })
 
 				if (dialElement) {
@@ -136,6 +191,12 @@ export default function MagnetGooDial() {
 						overshootTolerance: 0,
 						throwProps: true,
 						transformOrigin: '400px 300px', // Center of rotation
+						onDragEnd: goToClosestAnchor,
+						onClick: (e) => {
+							console.log('dialRotation.current: ', dialRotation.current)
+							// console.log('CLICKED', e.target)
+							// e.target.style.backgroundColor= 'blue'
+						},
 					})
 				}
 			}, comp)
