@@ -19,13 +19,7 @@ export default function MagnetGooDial() {
 	const outlineBG = useRef(null)
 	const dialGripA = useRef(null)
 	const dialGripB = useRef(null)
-
 	const anchors = [105, 135, 165, 195, 225, 255]
-
-	// type ClosestAnchorResult = {
-	// 	closestAnchor: number
-	// 	difference: number
-	// }
 
 	useLayoutEffect(() => {
 		tl.current = gsap.timeline()
@@ -43,7 +37,7 @@ export default function MagnetGooDial() {
 				const outlineBGElement = outlineBG.current as unknown as SVGPathElement
 				const pathLength = outlineElement ? outlineElement.getTotalLength() : 0
 
-				const update = function (this: Draggable) {
+				const update = function (this: Draggable, speed: number = 1) {
 					const rotationProgress = (dialRotation.current + 90) / 180
 					const draw = -rotationProgress * (pathLength / 2)
 					const percent: number = this.rotation
@@ -57,7 +51,7 @@ export default function MagnetGooDial() {
 					})
 
 					gsap.to([draggerElement], {
-						duration: 0.3,
+						duration: 0.3 / speed,
 						rotation: dialRotation.current,
 					})
 
@@ -66,7 +60,7 @@ export default function MagnetGooDial() {
 					})
 
 					gsap.to(dialGripAElement, {
-						duration: 0.6,
+						duration: 0.6 / speed,
 						rotation: function (i: number) {
 							return i === 0 ? -dialRotation.current : dialRotation.current * 2
 						},
@@ -74,11 +68,11 @@ export default function MagnetGooDial() {
 					})
 
 					gsap.to(dialGripBElement, {
-						duration: 0.6,
+						duration: 0.6 / speed,
 						rotation: function (i: number) {
 							return i === 0 ? dialRotation.current : -dialRotation.current * 2
 						},
-						stagger: 0.6,
+						stagger: 0.6 / speed,
 					})
 
 					if (display.current) {
@@ -86,7 +80,7 @@ export default function MagnetGooDial() {
 					}
 
 					gsap.to(outlineElement, {
-						duration: 0.3,
+						duration: 0.3 / speed,
 						strokeDashoffset: draw,
 						ease: 'sine.easeOut',
 					})
@@ -120,14 +114,13 @@ export default function MagnetGooDial() {
 					dialRotation.current = closestAnchor
 
 					// Retrieve the Draggable instance for the dial element
-					// const draggableInstance = Draggable.get(dial.current) as Draggable
 					const draggableInstance = Draggable.get(dial.current) as Draggable
 
 					// Manually update the rotation of the draggable instance
 					;(draggableInstance as any).rotation = closestAnchor
 
 					// Call the update function using the draggable instance as the context
-					update.call(draggableInstance)
+					update.call(draggableInstance, 0.67)
 				}
 
 				//-------------------------//
@@ -162,8 +155,9 @@ export default function MagnetGooDial() {
 					Draggable.create(dialElement, {
 						type: 'rotation',
 						bounds: { minRotation: 270, maxRotation: 90 },
-						onDrag: update,
-						onThrowUpdate: update,
+						onDrag: function () {
+							update.call(this as any, 1)
+						},
 						dragResistance: 0.1,
 						throwResistance: 0.1,
 						overshootTolerance: 0,
@@ -172,7 +166,6 @@ export default function MagnetGooDial() {
 						onDragEnd: goToClosestAnchor,
 						onClick: (e) => {
 							console.log('dialRotation.current: ', dialRotation.current)
-							// console.log('CLICKED', e.target)
 							// e.target.style.backgroundColor= 'blue'
 						},
 					})
