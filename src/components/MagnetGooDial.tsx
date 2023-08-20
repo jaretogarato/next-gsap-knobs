@@ -3,7 +3,6 @@ import { useRef, useLayoutEffect } from 'react'
 import { gsap } from 'gsap'
 import { Draggable } from 'gsap/Draggable'
 import '../styles/goo-dial.css'
-import { type } from 'os'
 
 gsap.registerPlugin(Draggable)
 
@@ -44,13 +43,13 @@ export default function MagnetGooDial() {
 					const percent: number = this.rotation
 						? -(this.rotation - 270) / 180
 						: 0
+          const color = getColorForAngle(this.rotation)
 
 					dialRotation.current = this.rotation
 
 					let detent = findClosestAnchor()
 					if (detent < 105) detent = 105
 					if (detent > 255) detent = 255
-					// const normalizedValue = (detent - 105) / (255 - 105)
 					const normalizedValue = (255 - detent) / (255 - 105)
 
 					const level = 1 + normalizedValue * 5
@@ -62,6 +61,7 @@ export default function MagnetGooDial() {
 					gsap.to([draggerElement], {
 						duration: 0.3 / speed,
 						rotation: dialRotation.current,
+            fill: color,
 					})
 
 					gsap.set(displayElement, {
@@ -85,13 +85,13 @@ export default function MagnetGooDial() {
 					})
 
 					if (display.current) {
-						// display.current.textContent = Math.round(percent * 100).toString()
 						display.current.textContent = level.toString()
 					}
 
 					gsap.to(outlineElement, {
 						duration: 0.3 / speed,
 						strokeDashoffset: draw,
+            stroke: color,
 						ease: 'sine.easeOut',
 					})
 
@@ -135,6 +135,29 @@ export default function MagnetGooDial() {
 					// Call the update function using the draggable instance as the context
 					update.call(draggableInstance, 0.67)
 				}
+
+        function getColorForAngle(angle: number) {
+          // Normalizing the angle between 0 and 1
+          const t = (angle - 105) / (255 - 105);
+
+          // Start color (#ffbf12)
+          const startR = 255;
+          const startG = 191;
+          const startB = 18;
+
+          // End color (#4bfffd)
+          const endR = 75;
+          const endG = 255;
+          const endB = 253;
+
+          // Linearly interpolating the colors
+          const r = Math.round(startR + t * (endR - startR));
+          const g = Math.round(startG + t * (endG - startG));
+          const b = Math.round(startB + t * (endB - startB));
+
+          return `rgb(${r}, ${g}, ${b})`;
+        }
+
 
 				//-------------------------//
 				gsap.set(
@@ -244,12 +267,11 @@ export default function MagnetGooDial() {
 					/>
 					<g className='dragger' ref={dragger}>
 						<circle
-							className='dragCircle'
 							cx='400'
 							cy='121'
 							r='22'
-							fill='#B2DDF7'
-							stroke='#000'
+							// stroke='#81D6E3'
+							// fill='#81D6E3'
 							strokeWidth='10'
 						/>
 					</g>
@@ -260,8 +282,8 @@ export default function MagnetGooDial() {
 						ref={display}
 						x='400'
 						y='301'
-						fontSize='40' // Add this line to set the font size
-						fill='#000' // Add this line to set the text color
+						fontSize='40'
+						fill='#000' // Set the text color
 						opacity='1'
 						stroke='#f00'
 						strokeWidth='1'
@@ -301,7 +323,11 @@ export default function MagnetGooDial() {
 						stroke='none'
 					/>
 				</g>
+
 			</svg>
+      <div style={{position: 'absolute', top: '0', left: '0', width: '400px', height: '300px', opacity: '0.075', zIndex: '-1'}}>
+        <img src='/assets/images/angles-for-detents-b.svg' alt='angles-for-detents' />
+      </div>
 		</div>
 	)
 }
