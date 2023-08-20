@@ -3,6 +3,7 @@ import { useRef, useLayoutEffect } from 'react'
 import { gsap } from 'gsap'
 import { Draggable } from 'gsap/Draggable'
 import '../styles/goo-dial.css'
+import { type } from 'os'
 
 gsap.registerPlugin(Draggable)
 
@@ -46,6 +47,14 @@ export default function MagnetGooDial() {
 
 					dialRotation.current = this.rotation
 
+					let detent = findClosestAnchor()
+					if (detent < 105) detent = 105
+					if (detent > 255) detent = 255
+					// const normalizedValue = (detent - 105) / (255 - 105)
+					const normalizedValue = (255 - detent) / (255 - 105)
+
+					const level = 1 + normalizedValue * 5
+
 					gsap.set([displayContainerElement], {
 						rotation: dialRotation.current,
 					})
@@ -64,7 +73,7 @@ export default function MagnetGooDial() {
 						rotation: function (i: number) {
 							return i === 0 ? -dialRotation.current : dialRotation.current * 2
 						},
-						stagger: 0.6,
+						stagger: 0.6 / speed,
 					})
 
 					gsap.to(dialGripBElement, {
@@ -76,7 +85,8 @@ export default function MagnetGooDial() {
 					})
 
 					if (display.current) {
-						display.current.textContent = Math.round(percent * 100).toString()
+						// display.current.textContent = Math.round(percent * 100).toString()
+						display.current.textContent = level.toString()
 					}
 
 					gsap.to(outlineElement, {
@@ -90,7 +100,7 @@ export default function MagnetGooDial() {
 					}
 				}
 
-				function goToClosestAnchor() {
+				function findClosestAnchor() {
 					let reference = dialRotation.current
 
 					if (anchors.length === 0) {
@@ -107,8 +117,11 @@ export default function MagnetGooDial() {
 							minimumDifference = difference
 						}
 					})
-					console.log('closestAnchor: ', closestAnchor)
-					console.log('minimumDifference: ', minimumDifference)
+					return closestAnchor
+				}
+
+				function goToClosestAnchor() {
+					const closestAnchor = findClosestAnchor()
 
 					// Set dialRotation to the closest anchor
 					dialRotation.current = closestAnchor
@@ -163,7 +176,9 @@ export default function MagnetGooDial() {
 						overshootTolerance: 0,
 						throwProps: true,
 						transformOrigin: '400px 300px', // Center of rotation
-						onDragEnd: goToClosestAnchor,
+						// onDragEnd: goToClosestAnchor,
+						onRelease: goToClosestAnchor,
+						// onThrowComplete: goToClosestAnchor,
 						onClick: (e) => {
 							console.log('dialRotation.current: ', dialRotation.current)
 							// e.target.style.backgroundColor= 'blue'
@@ -183,7 +198,7 @@ export default function MagnetGooDial() {
 			style={{
 				width: '400px',
 				height: '300px',
-				border: '1px solid orange',
+				border: 'none ',
 				position: 'relative',
 			}}
 		>
